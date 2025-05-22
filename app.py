@@ -4,6 +4,42 @@ import numpy as np
 import plotly.express as px
 import pydeck as pdk
 
+# ------- ESTILO GLOBAL Y FONDO INSTITUCIONAL ---------
+st.markdown("""
+    <style>
+    body, .main, .block-container {
+        background-color: #F5F6FA !important;
+    }
+    .kpi-container {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px 0 rgba(20, 33, 61, 0.08);
+        padding: 1.3rem 0.2rem 1rem 0.2rem;
+        margin-bottom: 2.5rem;
+        border: 2px solid #FCA31122;
+        width: 98%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .bigicon {
+        font-size: 2.5rem !important;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+    .separador {
+        height: 28px;
+        margin: 0.7rem 0 1.5rem 0;
+        border: none;
+        border-bottom: 3px solid #14213D11;
+        width: 97%;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 st.set_page_config(page_title="Corte de Gestión", layout="wide")
 
 # -------- Frase institucional y logo ---------
@@ -22,7 +58,6 @@ logo_svg = """
   </text>
 </svg>
 """
-
 st.markdown(
     f'<div style="display:flex;justify-content:center;margin-bottom:0.7rem;">{logo_svg}</div>',
     unsafe_allow_html=True
@@ -57,20 +92,6 @@ if uploaded_file:
 
     # ------- Card visual para KPIs con fondo y sombra ---------
     st.markdown("""
-        <style>
-        .kpi-container {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px 0 rgba(20, 33, 61, 0.08);
-            padding: 1.3rem 0.2rem 1rem 0.2rem;
-            margin-bottom: 2.5rem;
-            border: 2px solid #FCA31122;
-            width: 98%;
-            max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        </style>
         <div class="kpi-container">
         <div style="width:100%;">
         """, unsafe_allow_html=True)
@@ -80,15 +101,29 @@ if uploaded_file:
     en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
     fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
     sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
-    col1.metric("📋 Total de Órdenes", total_ordenes)
-    col2.metric("⏱️ En Tiempo", en_tiempo)
-    col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
-    col4.metric("🗓️ Sabatinas", sabatina)
+    col1.markdown(f'<span class="bigicon">📋</span> <span style="font-size:1.1rem;font-weight:500;">Total de Órdenes</span>', unsafe_allow_html=True)
+    col1.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#14213D;'>{total_ordenes}</span>", unsafe_allow_html=True)
+    col2.markdown(f'<span class="bigicon">⏱️</span> <span style="font-size:1.1rem;font-weight:500;">En Tiempo</span>', unsafe_allow_html=True)
+    col2.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#28723c;'>{en_tiempo}</span>", unsafe_allow_html=True)
+    col3.markdown(f'<span class="bigicon">⚠️</span> <span style="font-size:1.1rem;font-weight:500;">Fuera de Tiempo</span>', unsafe_allow_html=True)
+    col3.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#c98010;'>{fuera_tiempo}</span>", unsafe_allow_html=True)
+    col4.markdown(f'<span class="bigicon">📅</span> <span style="font-size:1.1rem;font-weight:500;">Sabatinas</span>', unsafe_allow_html=True)
+    col4.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#a02828;'>{sabatina}</span>", unsafe_allow_html=True)
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
+    # --------- Separador visual entre KPIs y Tabs ---------
+    st.markdown('<hr class="separador">', unsafe_allow_html=True)
+
     # ---- Tabs principales ----
-    tabs = st.tabs(["👷🏼 Proveedores", "DZ", "📍 Zonas (CR)", "🧑🏻‍💻 Supervisores", "🟢🟡🔴 Estatus", "⚠️ Tabla General"])
+    tabs = st.tabs([
+        "👷🏼 Proveedores", 
+        "DZ", 
+        "📍 Zonas (CR)", 
+        "🧑🏻‍💻 Supervisores", 
+        "🟢🟡🔴 Estatus", 
+        "⚠️ Tabla General"
+    ])
 
     ## --------- PROVEEDORES ----------
     with tabs[0]:
