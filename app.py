@@ -24,6 +24,12 @@ logo_svg = """
 </svg>
 """
 
+st.markdown(
+    f'<div style="display:flex;justify-content:center;margin-bottom:0.7rem;">{logo_svg}</div>',
+    unsafe_allow_html=True
+)
+
+# Card visual para KPIs
 st.markdown("""
     <style>
     .kpi-card {
@@ -45,12 +51,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.markdown(
-    f'<div style="display:flex;justify-content:center;margin-bottom:0.7rem;">{logo_svg}</div>',
-    unsafe_allow_html=True
-)
-
-# KPIs SIEMPRE ARRIBA (dentro del card visual)
+# KPIs adentro del "card"
 with st.container():
     col1, col2, col3, col4 = st.columns(4)
     total_ordenes = len(df_filt)
@@ -61,7 +62,6 @@ with st.container():
     col2.metric("⏱️ En Tiempo", en_tiempo)
     col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
     col4.metric("🗓️ Sabatinas", sabatina)
-
 
 st.sidebar.title("Filtros y Configuración")
 uploaded_file = st.sidebar.file_uploader("Carga tu archivo Excel", type=["xlsx"])
