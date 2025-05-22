@@ -15,9 +15,9 @@ st.markdown(
 )
 
 logo_svg = """
-<svg width="320" height="70" viewBox="0 0 320 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="70" rx="18" fill="#14213D"/>
-  <text x="160" y="45" text-anchor="middle" fill="#FCA311" font-size="34" font-family="Segoe UI,Arial,sans-serif" font-weight="bold">
+<svg width="370" height="74" viewBox="0 0 370 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="370" height="74" rx="24" fill="#14213D"/>
+  <text x="185" y="50" text-anchor="middle" fill="#FCA311" font-size="38" font-family="Segoe UI,Arial,sans-serif" font-weight="bold">
     Corte de Gestión
   </text>
 </svg>
@@ -55,34 +55,37 @@ if uploaded_file:
         df_filt = df_filt[df_filt["DZ"].isin(dz_filter)]
     df_filt = df_filt[(df_filt["FE.ENTRADA"] >= pd.to_datetime(fecha_inicio)) & (df_filt["FE.ENTRADA"] <= pd.to_datetime(fecha_fin))]
 
-    # ------- Card visual para KPIs ---------
+    # ------- Card visual para KPIs con fondo y sombra ---------
     st.markdown("""
         <style>
-        .kpi-card {
+        .kpi-container {
             background: #fff;
             border-radius: 18px;
             box-shadow: 0 4px 24px 0 rgba(20, 33, 61, 0.08);
-            padding: 1.5rem 0.5rem 1rem 0.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1.5px solid #FCA31122;
+            padding: 1.3rem 0.2rem 1rem 0.2rem;
+            margin-bottom: 2.5rem;
+            border: 2px solid #FCA31122;
+            width: 98%;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
         </style>
-        <div class="kpi-card"></div>
-    """, unsafe_allow_html=True)
-    # --- KPIs adentro del "card" (truco para mantenerlos juntos visualmente)
-    with st.container():
-        col1, col2, col3, col4 = st.columns(4)
-        total_ordenes = len(df_filt)
-        en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
-        fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
-        sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
-        col1.metric("📋 Total de Órdenes", total_ordenes)
-        col2.metric("⏱️ En Tiempo", en_tiempo)
-        col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
-        col4.metric("🗓️ Sabatinas", sabatina)
+        <div class="kpi-container">
+        <div style="width:100%;">
+        """, unsafe_allow_html=True)
+
+    col1, col2, col3, col4 = st.columns(4)
+    total_ordenes = len(df_filt)
+    en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
+    fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
+    sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
+    col1.metric("📋 Total de Órdenes", total_ordenes)
+    col2.metric("⏱️ En Tiempo", en_tiempo)
+    col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
+    col4.metric("🗓️ Sabatinas", sabatina)
+
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
     # ---- Tabs principales ----
     tabs = st.tabs(["👷🏼 Proveedores", "DZ", "📍 Zonas (CR)", "🧑🏻‍💻 Supervisores", "🟢🟡🔴 Estatus", "⚠️ Tabla General"])
