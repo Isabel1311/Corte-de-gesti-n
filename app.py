@@ -24,10 +24,44 @@ logo_svg = """
 </svg>
 """
 
+st.markdown("""
+    <style>
+    .kpi-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px 0 rgba(20, 33, 61, 0.08);
+        padding: 1.5rem 0.5rem 1rem 0.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid #FCA31122;
+    }
+    </style>
+    <div class="kpi-card">
+        <div style="width:100%">
+            <div id="kpi-row"></div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
 st.markdown(
     f'<div style="display:flex;justify-content:center;margin-bottom:0.7rem;">{logo_svg}</div>',
     unsafe_allow_html=True
 )
+
+# KPIs SIEMPRE ARRIBA (dentro del card visual)
+with st.container():
+    col1, col2, col3, col4 = st.columns(4)
+    total_ordenes = len(df_filt)
+    en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
+    fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
+    sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
+    col1.metric("📋 Total de Órdenes", total_ordenes)
+    col2.metric("⏱️ En Tiempo", en_tiempo)
+    col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
+    col4.metric("🗓️ Sabatinas", sabatina)
+
 
 st.sidebar.title("Filtros y Configuración")
 uploaded_file = st.sidebar.file_uploader("Carga tu archivo Excel", type=["xlsx"])
@@ -58,17 +92,6 @@ if uploaded_file:
 
     tabs = st.tabs(["👷🏼 Proveedores", "DZ", "📍 Zonas (CR)", "🧑🏻‍💻 Supervisores", "🟢🟡🔴 Estatus", "⚠️ Tabla General"])
 
-    # KPIs Globales siempre visibles
-    with st.expander("Ver KPIs Globales", expanded=True):
-        col1, col2, col3, col4 = st.columns(4)
-        total_ordenes = len(df_filt)
-        en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
-        fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
-        sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
-        col1.metric("📋 Total de Órdenes", total_ordenes)
-        col2.metric("⏱️ En Tiempo", en_tiempo)
-        col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
-        col4.metric("🗓️ Sabatinas", sabatina)
 
     ## --------- PROVEEDORES ----------
     with tabs[0]:
