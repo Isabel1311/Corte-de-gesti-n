@@ -185,7 +185,7 @@ if uploaded_file:
             return output.getvalue()
 
         st.download_button(
-            label="Descargar tabla filtrada en Excel",
+            label="📤 Descargar tabla filtrada en Excel",
             data=to_excel(df_filt),
             file_name="tabla_filtrada.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
