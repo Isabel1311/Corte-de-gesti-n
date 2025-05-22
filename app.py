@@ -56,7 +56,7 @@ if uploaded_file:
         df_filt = df_filt[df_filt["DZ"].isin(dz_filter)]
     df_filt = df_filt[(df_filt["FE.ENTRADA"] >= pd.to_datetime(fecha_inicio)) & (df_filt["FE.ENTRADA"] <= pd.to_datetime(fecha_fin))]
 
-    tabs = st.tabs(["Proveedores", "DZ", "Zonas (CR)", "Supervisores", "Estatus", "Tabla General"])
+    tabs = st.tabs(["👷🏼 Proveedores", "DZ", "📍 Zonas (CR)", "🧑🏻‍💻 Supervisores", "🟢🟡🔴 Estatus", "⚠️ Tabla General"])
 
     ## --------- PROVEEDORES ----------
     with tabs[0]:
