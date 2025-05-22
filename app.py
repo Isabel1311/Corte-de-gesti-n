@@ -4,6 +4,8 @@ import numpy as np
 import plotly.express as px
 import pydeck as pdk
 
+st.set_page_config(page_title="Corte de Gestión", layout="wide")
+
 # ------- ESTILO GLOBAL Y FONDO INSTITUCIONAL ---------
 st.markdown("""
     <style>
@@ -39,8 +41,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-st.set_page_config(page_title="Corte de Gestión", layout="wide")
 
 # -------- Frase institucional y logo ---------
 st.markdown(
