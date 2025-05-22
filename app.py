@@ -58,6 +58,18 @@ if uploaded_file:
 
     tabs = st.tabs(["👷🏼 Proveedores", "DZ", "📍 Zonas (CR)", "🧑🏻‍💻 Supervisores", "🟢🟡🔴 Estatus", "⚠️ Tabla General"])
 
+    # KPIs Globales siempre visibles
+    with st.expander("Ver KPIs Globales", expanded=True):
+        col1, col2, col3, col4 = st.columns(4)
+        total_ordenes = len(df_filt)
+        en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
+        fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
+        sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
+        col1.metric("📋 Total de Órdenes", total_ordenes)
+        col2.metric("⏱️ En Tiempo", en_tiempo)
+        col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
+        col4.metric("🗓️ Sabatinas", sabatina)
+
     ## --------- PROVEEDORES ----------
     with tabs[0]:
         st.header("Panel Comparativo de Proveedores")
@@ -178,18 +190,6 @@ if uploaded_file:
             file_name="tabla_filtrada.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
-
-    # KPIs Globales siempre visibles
-    with st.expander("Ver KPIs Globales", expanded=True):
-        col1, col2, col3, col4 = st.columns(4)
-        total_ordenes = len(df_filt)
-        en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
-        fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
-        sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
-        col1.metric("📋 Total de Órdenes", total_ordenes)
-        col2.metric("⏱️ En Tiempo", en_tiempo)
-        col3.metric("⚠️ Fuera de Tiempo", fuera_tiempo)
-        col4.metric("🗓️ Sabatinas", sabatina)
 
 else:
     st.info("Por favor, sube tu archivo Excel para comenzar.")
