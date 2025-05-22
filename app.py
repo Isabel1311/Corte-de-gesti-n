@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 import pydeck as pdk
 
-st.set_page_config(page_title="Corte de Gestión", layout="wide")
+st.set_page_config(page_title="Corte de Gestión", layout="wide")  # <-- SIEMPRE PRIMERO
 
 # ------- ESTILO GLOBAL Y FONDO INSTITUCIONAL ---------
 st.markdown("""
@@ -90,13 +90,17 @@ if uploaded_file:
         df_filt = df_filt[df_filt["DZ"].isin(dz_filter)]
     df_filt = df_filt[(df_filt["FE.ENTRADA"] >= pd.to_datetime(fecha_inicio)) & (df_filt["FE.ENTRADA"] <= pd.to_datetime(fecha_fin))]
 
+    # ------ KPI Sucursal ------
+    tiene_sucursal = "SUCURSAL" in df_filt.columns
+    sucursales_activas = df_filt["SUCURSAL"].nunique() if tiene_sucursal else None
+
     # ------- Card visual para KPIs con fondo y sombra ---------
     st.markdown("""
         <div class="kpi-container">
         <div style="width:100%;">
         """, unsafe_allow_html=True)
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     total_ordenes = len(df_filt)
     en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
     fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
@@ -109,17 +113,21 @@ if uploaded_file:
     col3.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#c98010;'>{fuera_tiempo}</span>", unsafe_allow_html=True)
     col4.markdown(f'<span class="bigicon">📅</span> <span style="font-size:1.1rem;font-weight:500;">Sabatinas</span>', unsafe_allow_html=True)
     col4.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#a02828;'>{sabatina}</span>", unsafe_allow_html=True)
+    if tiene_sucursal:
+        col5.markdown(f'<span class="bigicon">🏢</span> <span style="font-size:1.1rem;font-weight:500;">Sucursales</span>', unsafe_allow_html=True)
+        col5.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#3156a8;'>{sucursales_activas}</span>", unsafe_allow_html=True)
 
     st.markdown("</div></div>", unsafe_allow_html=True)
 
     # --------- Separador visual entre KPIs y Tabs ---------
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
-    # ---- Tabs principales ----
+    # ---- Tabs principales (agrega Sucursales) ----
     tabs = st.tabs([
         "👷🏼 Proveedores", 
         "DZ", 
         "📍 Zonas (CR)", 
+        "🏢 Sucursales",
         "🧑🏻‍💻 Supervisores", 
         "🟢🟡🔴 Estatus", 
         "⚠️ Tabla General"
@@ -205,8 +213,23 @@ if uploaded_file:
             tooltip={"text": "CR: {CR}\nÓrdenes: {Ordenes}"}
         ))
 
-    ## --------- SUPERVISORES ----------
+    ## --------- SUCURSALES ----------
     with tabs[3]:
+        st.header("Órdenes por Sucursal")
+        if tiene_sucursal:
+            suc_grp = df_filt["SUCURSAL"].value_counts().reset_index()
+            suc_grp.columns = ["SUCURSAL", "ÓRDENES"]
+            st.dataframe(suc_grp)
+            fig_suc = px.bar(suc_grp.head(15), x="SUCURSAL", y="ÓRDENES", text="ÓRDENES",
+                             title="Órdenes por Sucursal (Top 15)")
+            fig_suc.update_traces(textposition='outside')
+            fig_suc.update_layout(xaxis_tickangle=-30)
+            st.plotly_chart(fig_suc, use_container_width=True)
+        else:
+            st.info("No se encontró la columna 'SUCURSAL' en tus datos.")
+
+    ## --------- SUPERVISORES ----------
+    with tabs[4]:
         st.header("Órdenes por Supervisor")
         ordenes_sup = df_filt["SUPERVISOR"].value_counts().reset_index()
         ordenes_sup.columns = ["SUPERVISOR", "ÓRDENES"]
@@ -218,7 +241,7 @@ if uploaded_file:
         st.plotly_chart(fig_sup, use_container_width=True)
 
     ## --------- ESTATUS ----------
-    with tabs[4]:
+    with tabs[5]:
         st.header("Distribución por Estatus")
         estatus_dist = df_filt["ESTATUS 2"].value_counts().reset_index()
         estatus_dist.columns = ["ESTATUS", "ÓRDENES"]
@@ -228,7 +251,7 @@ if uploaded_file:
         st.plotly_chart(fig_est, use_container_width=True)
 
     ## --------- TABLA GENERAL + EXPORTACIÓN ----------
-    with tabs[5]:
+    with tabs[6]:
         st.header("Tabla Detallada Filtrada")
         st.dataframe(df_filt)
 
