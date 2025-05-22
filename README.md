@@ -1,32 +1,33 @@
 
-# Dashboard de Gestión de Órdenes
+# Corte de Gestión
 
-Visualiza, compara y analiza órdenes por proveedor, supervisor, CR y DZ en tiempo real.
+Dashboard visual y ejecutivo para monitoreo y análisis de órdenes por proveedor, DZ, zona, supervisor y estatus.
 
-## ¿Qué incluye?
-- KPIs de órdenes totales, en tiempo, fuera de tiempo, sabatinas.
-- Panel comparativo de proveedores.
-- Análisis y ranking por DZ.
-- Mapas interactivos de zonas y DZ (coordenadas simuladas).
-- Filtros inteligentes por proveedor, supervisor, estatus y DZ.
-- Exportación a Excel.
+## Branding Institucional
+- Frase: **Gestión que transforma, datos que mandan.**
+- Logo institucional: "Corte de Gestión" (SVG vectorial integrado).
+
+## Características
+- KPIs ejecutivos y métricas de desempeño.
+- Gráficas interactivas y exportación a Excel.
+- Navegación por pestañas: Proveedores, DZ, Zonas, Supervisores, Estatus, Tabla.
+- Mapas de calor (zonas y DZ).
+- Diseño institucional y profesional.
 
 ## ¿Cómo usar?
 
-1. **Clona este repositorio** o descarga el ZIP.
-2. Instala las dependencias:
+1. Descarga o clona este repositorio.
+2. Instala dependencias:
    ```
    pip install -r requirements.txt
    ```
-3. Ejecuta la app:
+3. Ejecuta:
    ```
    streamlit run app.py
    ```
-4. Sube tu archivo Excel con las órdenes (primera hoja).
-5. Explora y filtra resultados.
-
-> *¿Tienes catálogo de coordenadas reales para tus zonas/DZ? Puedes integrarlas fácilmente en el script para mejorar el mapa.*
+4. Sube tu archivo Excel (usa la primer hoja).
+5. Explora tus datos con visión directiva.
 
 ---
 
-Innovación y gestión inteligente, ¡a solo un click!
+Desarrollado con visión, innovación y excelencia.

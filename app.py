@@ -1,25 +1,34 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
 import pydeck as pdk
 
-# Logo SVG code
+st.set_page_config(page_title="Corte de Gestión", layout="wide")
+
+# -------- Frase institucional y logo ---------
+st.markdown(
+    '<div style="text-align:center; font-size:1.4rem; color:#14213D; font-weight:600; margin-top:1.5rem;">'
+    'Gestión que transforma, datos que mandan.'
+    '</div>',
+    unsafe_allow_html=True
+)
+
 logo_svg = """
-<svg width="270" height="64" viewBox="0 0 270 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="270" height="64" rx="18" fill="#14213D"/>
-  <text x="135" y="38" text-anchor="middle" fill="#FCA311" font-size="32" font-family="Segoe UI,Arial,sans-serif" font-weight="bold">
+<svg width="320" height="70" viewBox="0 0 320 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="70" rx="18" fill="#14213D"/>
+  <text x="160" y="45" text-anchor="middle" fill="#FCA311" font-size="34" font-family="Segoe UI,Arial,sans-serif" font-weight="bold">
     Corte de Gestión
   </text>
 </svg>
 """
 
 st.markdown(
-    f'<div style="display:flex;justify-content:center;margin-bottom:0.5rem;">{logo_svg}</div>',
+    f'<div style="display:flex;justify-content:center;margin-bottom:0.7rem;">{logo_svg}</div>',
     unsafe_allow_html=True
 )
 
-st.set_page_config(page_title="Dashboard de Gestión", layout="wide")
 st.sidebar.title("Filtros y Configuración")
 uploaded_file = st.sidebar.file_uploader("Carga tu archivo Excel", type=["xlsx"])
 
@@ -184,6 +193,3 @@ if uploaded_file:
 
 else:
     st.info("Por favor, sube tu archivo Excel para comenzar.")
-
-
-   
