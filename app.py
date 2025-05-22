@@ -68,7 +68,7 @@ if uploaded_file:
         )
         prov_grp["% En Tiempo"] = (prov_grp["En_Tiempo"] / prov_grp["Ordenes"] * 100).round(1)
         prov_grp["% Fuera Tiempo"] = (prov_grp["Fuera_Tiempo"] / prov_grp["Ordenes"] * 100).round(1)
-        prov_grp = prov_grp.sort_values("Ordenes", ascending=False).head(10)
+        prov_grp = prov_grp.sort_values("Ordenes", ascending=False).head()
         st.dataframe(prov_grp)
 
         fig_prov = px.bar(prov_grp, x=prov_grp.index, y=["% En Tiempo", "% Fuera Tiempo"],
