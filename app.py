@@ -84,7 +84,7 @@ if uploaded_file:
         st.dataframe(prov_grp)
 
         fig_prov = px.bar(prov_grp, x=prov_grp.index, y=["% En Tiempo", "% Fuera Tiempo"],
-                          barmode='group', title="Top 10 Proveedores: % En Tiempo vs % Fuera de Tiempo",
+                          barmode='group', title="Proveedores: % En Tiempo vs % Fuera de Tiempo",
                           labels={"value": "Porcentaje", "PROVEEDOR": "Proveedor"})
         fig_prov.update_traces(texttemplate='%{y}%', textposition='outside')
         fig_prov.update_layout(xaxis_tickangle=-30, legend=dict(orientation="h", y=1.1))
