@@ -6,7 +6,7 @@ import pydeck as pdk
 
 st.set_page_config(page_title="Corte de Gestión", layout="wide")  # <-- SIEMPRE PRIMERO
 
-# ------- ESTILO GLOBAL Y FONDO INSTITUCIONAL + KPIs como tarjetas ---------
+# ------- ESTILO GLOBAL, KPIs como tarjetas, colores y bordes animados ---------
 st.markdown("""
     <style>
     body, .main, .block-container {
@@ -21,34 +21,69 @@ st.markdown("""
         max-width: 1200px;
     }
     .kpi-card {
-        background: #fff;
-        border-radius: 18px;
-        box-shadow: 0 4px 20px 0 rgba(20, 33, 61, 0.10);
-        border: 2px solid #FCA31122;
+        background: linear-gradient(135deg, #e5edfa 0%, #f7faff 100%);
+        border-radius: 20px;
+        box-shadow: 0 4px 24px 0 rgba(20, 33, 61, 0.12);
+        border: 3px solid #ffffff44;
         padding: 1rem 0.5rem 0.7rem 0.5rem;
         flex: 1 1 0;
         display: flex;
         flex-direction: column;
         align-items: center;
         min-width: 140px;
-        min-height: 115px;
+        min-height: 120px;
+        transition: border 0.23s cubic-bezier(.53,.19,.51,.91), box-shadow 0.23s;
+        cursor: pointer;
+        position: relative;
+    }
+    .kpi-card:nth-child(1) {
+        background: linear-gradient(135deg, #fdf6e4 0%, #f9f6f0 100%);
+        border-color: #FCA31155;
+    }
+    .kpi-card:nth-child(2) {
+        background: linear-gradient(135deg, #e4f8ec 0%, #e9f9f6 100%);
+        border-color: #1aaf5a44;
+    }
+    .kpi-card:nth-child(3) {
+        background: linear-gradient(135deg, #fff6e4 0%, #faf8ef 100%);
+        border-color: #f2b80855;
+    }
+    .kpi-card:nth-child(4) {
+        background: linear-gradient(135deg, #fbe6e6 0%, #f9eeee 100%);
+        border-color: #b7292955;
+    }
+    .kpi-card:nth-child(5) {
+        background: linear-gradient(135deg, #e6eafb 0%, #eef2fa 100%);
+        border-color: #3053a055;
+    }
+    .kpi-card:hover {
+        border-width: 3.5px;
+        box-shadow: 0 0 0 5px #FCA31133, 0 10px 30px 0 #1a1a2a0c;
+        z-index: 1;
     }
     .kpi-icon {
-        font-size: 2.6rem;
-        margin-bottom: 0.15rem;
+        font-size: 2.7rem;
+        margin-bottom: 0.12rem;
+        filter: drop-shadow(0 1.5px 1.2px #ffffff90);
     }
     .kpi-label {
-        font-size: 1.12rem;
+        font-size: 1.11rem;
         font-weight: 500;
-        color: #222c;
-        margin-bottom: 0.07rem;
+        color: #232323e6;
+        margin-bottom: 0.08rem;
     }
     .kpi-value {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin-top: 0.13rem;
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-top: 0.12rem;
         letter-spacing: -1px;
+        text-shadow: 0 1px 0 #ffffff20;
     }
+    .kpi-card:nth-child(1) .kpi-value { color: #14213D; }
+    .kpi-card:nth-child(2) .kpi-value { color: #188038; }
+    .kpi-card:nth-child(3) .kpi-value { color: #b88b20; }
+    .kpi-card:nth-child(4) .kpi-value { color: #a03131; }
+    .kpi-card:nth-child(5) .kpi-value { color: #3053a0; }
     .separador {
         height: 28px;
         margin: 0.7rem 0 1.5rem 0;
@@ -110,42 +145,41 @@ if uploaded_file:
         df_filt = df_filt[df_filt["DZ"].isin(dz_filter)]
     df_filt = df_filt[(df_filt["FE.ENTRADA"] >= pd.to_datetime(fecha_inicio)) & (df_filt["FE.ENTRADA"] <= pd.to_datetime(fecha_fin))]
 
-   # --- Calcula los KPIs ---
-total_ordenes = len(df_filt)
-en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
-fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
-sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
-tiene_sucursal = "SUCURSAL" in df_filt.columns
-sucursales = df_filt["SUCURSAL"].nunique() if tiene_sucursal else None
+    # Calcula los valores KPI
+    total_ordenes = len(df_filt)
+    en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
+    fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
+    sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
+    tiene_sucursal = "SUCURSAL" in df_filt.columns
+    sucursales = df_filt["SUCURSAL"].nunique() if tiene_sucursal else None
 
-# --- RENDERIZAR TODA LA FILA DE KPIS COMO HTML ---
-kpi_cards_html = f"""
-<div class="kpi-row">
-    <div class="kpi-card">
-        <div class="kpi-icon">📋</div>
-        <div class="kpi-label">Total de Órdenes</div>
-        <div class="kpi-value" style="color:#14213D">{total_ordenes:,}</div>
+    # Cards visuales KPIs con colores y bordes animados
+    kpi_cards = f"""
+    <div class="kpi-row">
+        <div class='kpi-card'>
+            <div class='kpi-icon'>📋</div>
+            <div class='kpi-label'>Total de Órdenes</div>
+            <div class='kpi-value'>{total_ordenes:,}</div>
+        </div>
+        <div class='kpi-card'>
+            <div class='kpi-icon'>⏱️</div>
+            <div class='kpi-label'>En Tiempo</div>
+            <div class='kpi-value'>{en_tiempo:,}</div>
+        </div>
+        <div class='kpi-card'>
+            <div class='kpi-icon'>⚠️</div>
+            <div class='kpi-label'>Fuera de Tiempo</div>
+            <div class='kpi-value'>{fuera_tiempo:,}</div>
+        </div>
+        <div class='kpi-card'>
+            <div class='kpi-icon'>📅</div>
+            <div class='kpi-label'>Sabatinas</div>
+            <div class='kpi-value'>{sabatina:,}</div>
+        </div>
+        {"<div class='kpi-card'><div class='kpi-icon'>🏢</div><div class='kpi-label'>Sucursales</div><div class='kpi-value'>" + str(sucursales) + "</div></div>" if tiene_sucursal else ""}
     </div>
-    <div class="kpi-card">
-        <div class="kpi-icon">⏱️</div>
-        <div class="kpi-label">En Tiempo</div>
-        <div class="kpi-value" style="color:#188038">{en_tiempo:,}</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-icon">⚠️</div>
-        <div class="kpi-label">Fuera de Tiempo</div>
-        <div class="kpi-value" style="color:#b88b20">{fuera_tiempo:,}</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-icon">📅</div>
-        <div class="kpi-label">Sabatinas</div>
-        <div class="kpi-value" style="color:#a03131">{sabatina:,}</div>
-    </div>
-    {"<div class='kpi-card'><div class='kpi-icon'>🏢</div><div class='kpi-label'>Sucursales</div><div class='kpi-value' style='color:#3053a0'>{:,}</div></div>".format(sucursales) if tiene_sucursal else ""}
-</div>
-"""
-
-st.markdown(kpi_cards_html, unsafe_allow_html=True)
+    """
+    st.markdown(kpi_cards, unsafe_allow_html=True)
 
     # --------- Separador visual entre KPIs y Tabs ---------
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
