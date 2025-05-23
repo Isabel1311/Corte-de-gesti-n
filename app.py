@@ -6,28 +6,48 @@ import pydeck as pdk
 
 st.set_page_config(page_title="Corte de Gestión", layout="wide")  # <-- SIEMPRE PRIMERO
 
-# ------- ESTILO GLOBAL Y FONDO INSTITUCIONAL ---------
+# ------- ESTILO GLOBAL Y FONDO INSTITUCIONAL + KPIs como tarjetas ---------
 st.markdown("""
     <style>
     body, .main, .block-container {
         background-color: #F5F6FA !important;
     }
-    .kpi-container {
+    .kpi-row {
+        display: flex;
+        gap: 1.4rem;
+        justify-content: center;
+        width: 99%;
+        margin: 0 auto 1.5rem auto;
+        max-width: 1200px;
+    }
+    .kpi-card {
         background: #fff;
         border-radius: 18px;
-        box-shadow: 0 4px 24px 0 rgba(20, 33, 61, 0.08);
-        padding: 1.3rem 0.2rem 1rem 0.2rem;
-        margin-bottom: 2.5rem;
+        box-shadow: 0 4px 20px 0 rgba(20, 33, 61, 0.10);
         border: 2px solid #FCA31122;
-        width: 98%;
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
+        padding: 1rem 0.5rem 0.7rem 0.5rem;
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 140px;
+        min-height: 115px;
     }
-    .bigicon {
-        font-size: 2.5rem !important;
-        vertical-align: middle;
-        margin-right: 8px;
+    .kpi-icon {
+        font-size: 2.6rem;
+        margin-bottom: 0.15rem;
+    }
+    .kpi-label {
+        font-size: 1.12rem;
+        font-weight: 500;
+        color: #222c;
+        margin-bottom: 0.07rem;
+    }
+    .kpi-value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-top: 0.13rem;
+        letter-spacing: -1px;
     }
     .separador {
         height: 28px;
@@ -90,39 +110,68 @@ if uploaded_file:
         df_filt = df_filt[df_filt["DZ"].isin(dz_filter)]
     df_filt = df_filt[(df_filt["FE.ENTRADA"] >= pd.to_datetime(fecha_inicio)) & (df_filt["FE.ENTRADA"] <= pd.to_datetime(fecha_fin))]
 
-    # ------ KPI Sucursal ------
-    tiene_sucursal = "SUCURSAL" in df_filt.columns
-    sucursales_activas = df_filt["SUCURSAL"].nunique() if tiene_sucursal else None
-
-    # ------- Card visual para KPIs con fondo y sombra ---------
-    st.markdown("""
-        <div class="kpi-container">
-        <div style="width:100%;">
-        """, unsafe_allow_html=True)
-
-    col1, col2, col3, col4, col5 = st.columns(5)
+    # KPIs individuales como cards
+    st.markdown('<div class="kpi-row">', unsafe_allow_html=True)
     total_ordenes = len(df_filt)
     en_tiempo = df_filt["ESTATUS 2"].str.contains("EN TIEMPO", na=False, case=False).sum()
     fuera_tiempo = df_filt["ESTATUS 2"].str.contains("FUERA", na=False, case=False).sum()
     sabatina = df_filt["SABATINA?"].str.upper().eq("SI").sum()
-    col1.markdown(f'<span class="bigicon">📋</span> <span style="font-size:1.1rem;font-weight:500;">Total de Órdenes</span>', unsafe_allow_html=True)
-    col1.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#14213D;'>{total_ordenes}</span>", unsafe_allow_html=True)
-    col2.markdown(f'<span class="bigicon">⏱️</span> <span style="font-size:1.1rem;font-weight:500;">En Tiempo</span>', unsafe_allow_html=True)
-    col2.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#28723c;'>{en_tiempo}</span>", unsafe_allow_html=True)
-    col3.markdown(f'<span class="bigicon">⚠️</span> <span style="font-size:1.1rem;font-weight:500;">Fuera de Tiempo</span>', unsafe_allow_html=True)
-    col3.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#c98010;'>{fuera_tiempo}</span>", unsafe_allow_html=True)
-    col4.markdown(f'<span class="bigicon">📅</span> <span style="font-size:1.1rem;font-weight:500;">Sabatinas</span>', unsafe_allow_html=True)
-    col4.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#a02828;'>{sabatina}</span>", unsafe_allow_html=True)
-    if tiene_sucursal:
-        col5.markdown(f'<span class="bigicon">🏢</span> <span style="font-size:1.1rem;font-weight:500;">Sucursales</span>', unsafe_allow_html=True)
-        col5.markdown(f"<span style='font-size:2.6rem;font-weight:700;color:#3156a8;'>{sucursales_activas}</span>", unsafe_allow_html=True)
+    tiene_sucursal = "SUCURSAL" in df_filt.columns
+    sucursales = df_filt["SUCURSAL"].nunique() if tiene_sucursal else None
+    kpi_cols = st.columns(5 if tiene_sucursal else 4)
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    with kpi_cols[0]:
+        st.markdown(f"""
+            <div class='kpi-card'>
+                <div class='kpi-icon'>📋</div>
+                <div class='kpi-label'>Total de Órdenes</div>
+                <div class='kpi-value'>{total_ordenes:,}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with kpi_cols[1]:
+        st.markdown(f"""
+            <div class='kpi-card'>
+                <div class='kpi-icon'>⏱️</div>
+                <div class='kpi-label'>En Tiempo</div>
+                <div class='kpi-value' style='color: #188038'>{en_tiempo:,}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with kpi_cols[2]:
+        st.markdown(f"""
+            <div class='kpi-card'>
+                <div class='kpi-icon'>⚠️</div>
+                <div class='kpi-label'>Fuera de Tiempo</div>
+                <div class='kpi-value' style='color: #b88b20'>{fuera_tiempo:,}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with kpi_cols[3]:
+        st.markdown(f"""
+            <div class='kpi-card'>
+                <div class='kpi-icon'>📅</div>
+                <div class='kpi-label'>Sabatinas</div>
+                <div class='kpi-value' style='color: #a03131'>{sabatina:,}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    if tiene_sucursal:
+        with kpi_cols[4]:
+            st.markdown(f"""
+                <div class='kpi-card'>
+                    <div class='kpi-icon'>🏢</div>
+                    <div class='kpi-label'>Sucursales</div>
+                    <div class='kpi-value' style='color: #3053a0'>{sucursales:,}</div>
+                </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # --------- Separador visual entre KPIs y Tabs ---------
     st.markdown('<hr class="separador">', unsafe_allow_html=True)
 
-    # ---- Tabs principales (agrega Sucursales) ----
+    # ---- Tabs principales (incluye Sucursales) ----
     tabs = st.tabs([
         "👷🏼 Proveedores", 
         "DZ", 
